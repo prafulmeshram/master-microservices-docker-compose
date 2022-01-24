@@ -1,0 +1,23 @@
+server:
+  port: 8003
+  
+spring:
+  profiles:
+    active:
+    #- native
+    - git
+  application:
+    name: config-server  
+  cloud:
+    config:
+      server:
+#        native:
+#          search-locations:
+#          #- classpath:/config
+#          - file:/home/jack/Documents/WORKSPACES/MSATER_MICROSERVICES/config
+        git:
+          uri: https://github.com/prafulmeshram/master-microservice-config.git
+          default-label: master
+          clone-on-start: true
+          username: prafulmeshram
+          password:  

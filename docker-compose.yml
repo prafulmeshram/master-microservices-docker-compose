@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  config-server:
+    image: meshrampraful3/master-microservice:config-server-0.0.1
+    ports: 
+      - "8003:8003"
+    networks:
+      - master-network 
+  account-service:
+    image: meshrampraful3/master-microservice:account-service-0.0.1
+    ports:
+      - "9004:9004"
+      - "8004:8004"
+      - "7004:7004"
+    networks:
+      - master-network
+    depends_on:
+      - config-server
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 20s
+        max_attempts: 3
+        window: 60s 
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_CONFIG_IMPORT=configserver:http://config-server:8003
+      - WAIT_HOSTS=config-server:8003
+  loan-service:
+    image: meshrampraful3/master-microservice:loan-service-0.0.1
+    ports:
+      - "9005:9005"
+      - "8007:8007"
+      - "7005:7005"
+    networks:
+      - master-network
+    depends_on:
+      - config-server
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 40s
+        max_attempts: 3
+        window: 60s 
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_CONFIG_IMPORT=configserver:http://config-server:8003
+      - WAIT_HOSTS=config-server:8003
+  card-service:
+    image: meshrampraful3/master-microservice:card-service-0.0.1
+    ports:
+      - "9006:9006"
+      - "8006:8006"
+      - "7006:7006"
+    networks:
+      - master-network
+    depends_on:
+      - config-server
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 60s
+        max_attempts: 3
+        window: 60s 
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_CONFIG_IMPORT=configserver:http://config-server:8003
+      - WAIT_HOSTS=config-server:8003        
+  
+networks:
+  master-network:

@@ -1,0 +1,12 @@
+server:
+  port: 8006
+spring:
+  profiles:
+    active:
+    - dev
+  config:
+    import:
+    - configserver:http://localhost:8003
+  application:
+    name: card-service
+    
