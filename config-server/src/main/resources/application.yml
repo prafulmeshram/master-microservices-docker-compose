@@ -20,4 +20,5 @@ spring:
           default-label: master
           clone-on-start: true
           username: prafulmeshram
-          password:  
+          password: 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
+        
