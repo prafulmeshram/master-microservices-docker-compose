@@ -14,11 +14,12 @@ spring:
 #        native:
 #          search-locations:
 #          #- classpath:/config
-#          - file:/home/jack/Documents/WORKSPACES/MSATER_MICROSERVICES/config
+#          - file:/home/jack/Documents/WORKSPACES/MSATER_MICROSERVICES/config 
         git:
           uri: https://github.com/prafulmeshram/master-microservice-config.git
-          default-label: master
-          clone-on-start: true
           username: prafulmeshram
-          password: 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
-        
+          password: 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
+          clone-on-start: true
+          default-label: master
+        bootstrap: true
+       

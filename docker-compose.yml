@@ -6,7 +6,26 @@ services:
     ports: 
       - "8003:8003"
     networks:
-      - master-network 
+      - master-network
+  eureka-server:
+    image: meshrampraful3/master-microservice:eureka-server-0.0.1
+    ports:
+      - "8001:8001"
+    networks:
+      - master-network
+    depends_on: 
+      - config-server
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 20s
+        max_attempts: 3
+        window: 60s
+    environment:
+      - SPRING_PROFILES_ACTIVE=default
+      - SPRING_CONFIG_IMPORT=configserver:http://config-server:8003
+      - WAIT_HOSTS=config-server:8003                  
+
   account-service:
     image: meshrampraful3/master-microservice:account-service-0.0.1
     ports:
@@ -17,26 +36,7 @@ services:
       - master-network
     depends_on:
       - config-server
-    deploy:
-      restart_policy:
-        condition: on-failure
-        delay: 20s
-        max_attempts: 3
-        window: 60s 
-    environment:
-      - SPRING_PROFILES_ACTIVE=dev
-      - SPRING_CONFIG_IMPORT=configserver:http://config-server:8003
-      - WAIT_HOSTS=config-server:8003
-  loan-service:
-    image: meshrampraful3/master-microservice:loan-service-0.0.1
-    ports:
-      - "9005:9005"
-      - "8007:8007"
-      - "7005:7005"
-    networks:
-      - master-network
-    depends_on:
-      - config-server
+      - eureka-server
     deploy:
       restart_policy:
         condition: on-failure
@@ -47,6 +47,29 @@ services:
       - SPRING_PROFILES_ACTIVE=dev
       - SPRING_CONFIG_IMPORT=configserver:http://config-server:8003
       - WAIT_HOSTS=config-server:8003
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8001/
+  loan-service:
+    image: meshrampraful3/master-microservice:loan-service-0.0.1
+    ports:
+      - "9005:9005"
+      - "8007:8007"
+      - "7005:7005"
+    networks:
+      - master-network
+    depends_on:
+      - config-server
+      - eureka-server
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 60s
+        max_attempts: 3
+        window: 60s 
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_CONFIG_IMPORT=configserver:http://config-server:8003
+      - WAIT_HOSTS=config-server:8003
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8001/
   card-service:
     image: meshrampraful3/master-microservice:card-service-0.0.1
     ports:
@@ -57,16 +80,18 @@ services:
       - master-network
     depends_on:
       - config-server
+      - eureka-server
     deploy:
       restart_policy:
         condition: on-failure
-        delay: 60s
+        delay: 80s
         max_attempts: 3
         window: 60s 
     environment:
       - SPRING_PROFILES_ACTIVE=dev
       - SPRING_CONFIG_IMPORT=configserver:http://config-server:8003
-      - WAIT_HOSTS=config-server:8003        
+      - WAIT_HOSTS=config-server:8003
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8001/       
   
 networks:
   master-network:
